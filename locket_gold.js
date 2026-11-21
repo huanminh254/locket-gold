@@ -200,7 +200,14 @@
                 };
             }
 
-            $done({ body: JSON.stringify(rcObj) });
+            var rcHeaders = ($response && $response.headers) ? $response.headers : {};
+            rcHeaders["Content-Type"] = "application/json; charset=utf-8";
+            rcHeaders["Cache-Control"] = "no-cache, no-store, must-revalidate";
+            $done({
+                status: 200,
+                headers: rcHeaders,
+                body: JSON.stringify(rcObj)
+            });
             return;
         }
 
@@ -214,6 +221,12 @@
             } catch (e) {
                 fbObj = {};
             }
+
+            delete fbObj.error;
+            delete fbObj.code;
+            delete fbObj.message;
+            delete fbObj.status;
+            delete fbObj.details;
 
             fbObj.entries = fbObj.entries || {};
 
@@ -251,7 +264,18 @@
             fbObj.entries["video_audio_codec"] = "aac";
 
             fbObj.state = "UPDATE";
-            $done({ body: JSON.stringify(fbObj) });
+            fbObj.templateVersion = String(Date.now());
+
+            var respHeaders = ($response && $response.headers) ? $response.headers : {};
+            respHeaders["Content-Type"] = "application/json; charset=UTF-8";
+            respHeaders["etag"] = fbObj.templateVersion;
+            respHeaders["Cache-Control"] = "no-cache, no-store, must-revalidate";
+
+            $done({
+                status: 200,
+                headers: respHeaders,
+                body: JSON.stringify(fbObj)
+            });
             return;
         }
 
