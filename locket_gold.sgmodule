@@ -1,14 +1,19 @@
-#!name=Locket Gold Ultra Universal Unlock v4.3
-#!desc=Mở khóa Locket Gold toàn diện: Video 30s CÓ TIẾNG, 57 Khung viền widget, 38 VIP Camera Filters/Stickers, Đăng từ Album/Thư viện, Xem ai đã xem, Đổi icon app, Caption dài vô hạn, Huy hiệu Vương miện Gold, Chặn quảng cáo & Paywall.
+#!name=Locket Gold Ultra Universal Unlock v4.8
+#!desc=Mở khóa Locket Gold toàn diện: Photobooth 4 Ô (Life 4 Cuts), 57 Khung viền widget, 38 VIP Camera Filters/Stickers, Video 30s CÓ TIẾNG, Đăng từ Album/Thư viện, Xem ai đã xem, Đổi icon app, Caption dài vô hạn, Huy hiệu Vương miện Gold, Chặn quảng cáo & Paywall.
 #!category=Tweak
+
+[Host]
+firebaseremoteconfigrealtime.googleapis.com = 0.0.0.0
 
 [Rule]
 AND,((DOMAIN,firebaseremoteconfig.googleapis.com),(PROTOCOL,UDP)),REJECT
 AND,((DOMAIN,firebaseremoteconfigrealtime.googleapis.com),(PROTOCOL,UDP)),REJECT
+AND,((DOMAIN,us-central1-locket-4252a.cloudfunctions.net),(PROTOCOL,UDP)),REJECT
 AND,((DOMAIN-SUFFIX,googleapis.com),(PROTOCOL,UDP)),REJECT
 DOMAIN,api.revenuecat.com,DIRECT
 DOMAIN,firebaseremoteconfig.googleapis.com,DIRECT
 DOMAIN,firebaseremoteconfigrealtime.googleapis.com,DIRECT
+DOMAIN,us-central1-locket-4252a.cloudfunctions.net,DIRECT
 
 [Header Rewrite]
 ^https?:\/\/api\.revenuecat\.com\/.+ header-del If-None-Match
@@ -32,8 +37,9 @@ DOMAIN,firebaseremoteconfigrealtime.googleapis.com,DIRECT
 ^https?:\/\/firebaseremoteconfigrealtime\.googleapis\.com\/.+ header-replace Cache-Control no-cache
 
 [Script]
-Locket_Req = type=http-request,pattern=^https?:\/\/(api\.revenuecat\.com\/.+|firebaseremoteconfig\.googleapis\.com\/.+|firebaseremoteconfigrealtime\.googleapis\.com\/.+),script-path=https://cdn.jsdelivr.net/gh/huanminh254/locket-gold@v4.3/locket_gold.js,timeout=30
-Locket_Res = type=http-response,pattern=^https?:\/\/(api\.revenuecat\.com\/.+|firebaseremoteconfig\.googleapis\.com\/.+|firebaseremoteconfigrealtime\.googleapis\.com\/.+),script-path=https://cdn.jsdelivr.net/gh/huanminh254/locket-gold@v4.3/locket_gold.js,requires-body=true,max-size=-1,timeout=60
+Locket_Req = type=http-request,pattern=^https?:\/\/(api\.revenuecat\.com\/.+|firebaseremoteconfig\.googleapis\.com\/.+|firebaseremoteconfigrealtime\.googleapis\.com\/.+|us-central1-locket-4252a\.cloudfunctions\.net\/.+),script-path=https://cdn.jsdelivr.net/gh/huanminh254/locket-gold@v4.8/locket_gold.js,timeout=30,enable=true
+Locket_Res = type=http-response,pattern=^https?:\/\/(api\.revenuecat\.com\/.+|firebaseremoteconfig\.googleapis\.com\/.+|firebaseremoteconfigrealtime\.googleapis\.com\/.+|us-central1-locket-4252a\.cloudfunctions\.net\/.+),script-path=https://cdn.jsdelivr.net/gh/huanminh254/locket-gold@v4.8/locket_gold.js,requires-body=true,max-size=3145728,timeout=60,enable=true
 
 [MITM]
-hostname = %APPEND% api.revenuecat.com, firebaseremoteconfig.googleapis.com, firebaseremoteconfigrealtime.googleapis.com
+hostname = %APPEND% api.revenuecat.com, firebaseremoteconfig.googleapis.com, firebaseremoteconfigrealtime.googleapis.com, us-central1-locket-4252a.cloudfunctions.net
+enable = true
