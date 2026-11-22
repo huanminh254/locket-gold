@@ -8,9 +8,12 @@
  */
 
 (function () {
+    var hasReq = typeof $request !== "undefined" && $request !== null;
+    var hasRes = typeof $response !== "undefined" && $response !== null;
+
     // 1. HTTP-REQUEST PHASE: STRIP ETAGS TO FORCE FRESH 200 OK
-    if (typeof $response === "undefined") {
-        var reqHeaders = ($request && $request.headers) ? $request.headers : {};
+    if (!hasRes) {
+        var reqHeaders = (hasReq && $request.headers) ? $request.headers : {};
         var cleanedHeaders = {};
         for (var h in reqHeaders) {
             if (!/^(x-revenuecat-etag|if-none-match|if-modified-since|etag)$/i.test(h)) {
@@ -24,12 +27,21 @@
     }
 
     // 2. HTTP-RESPONSE PHASE
-    var reqUrl = ($request && $request.url) ? $request.url.toLowerCase() : "";
-    var respBody = $response.body || "";
+    var reqUrl = (hasReq && $request.url) ? $request.url.toLowerCase() : "";
+    var respBody = (hasRes && $response.body) ? $response.body : "";
 
     try {
+        var isRevenueCat = reqUrl.indexOf("revenuecat.com") !== -1 ||
+                           respBody.indexOf('"subscriber"') !== -1 ||
+                           respBody.indexOf('"entitlements"') !== -1;
+
+        var isFirebase = reqUrl.indexOf("firebaseremoteconfig") !== -1 ||
+                         respBody.indexOf('"entries"') !== -1 ||
+                         respBody.indexOf('"templateversion"') !== -1 ||
+                         respBody.indexOf('"templateVersion"') !== -1;
+
         // A. REVENUECAT (Locket Gold 193 Entitlements & Subscriptions)
-        if (reqUrl.indexOf("revenuecat.com") !== -1) {
+        if (isRevenueCat) {
             var rcObj = {};
             try {
                 if (respBody && respBody.trim()) {
@@ -184,7 +196,7 @@
         }
 
         // B. FIREBASE REMOTE CONFIG (1,143 Production UpLocket Entries + Audio & Video Fix)
-        if (reqUrl.indexOf("firebaseremoteconfig") !== -1) {
+        if (isFirebase) {
             var fbObj = {};
             try {
                 if (respBody && respBody.trim()) {
