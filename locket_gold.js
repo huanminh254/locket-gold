@@ -247,6 +247,10 @@
 
         // C. CLOUDFUNCTIONS INTERCEPTION (Dynamic Links / Views)
         if (reqUrl.indexOf("cloudfunctions.net") !== -1) {
+            if (/\.(png|jpg|jpeg|webp|gif|svg)(\?.*)?$/i.test(reqUrl)) {
+                $done({ body: respBody });
+                return;
+            }
             var cfHeaders = ($response && $response.headers) ? $response.headers : {};
             cfHeaders["Content-Type"] = "application/json; charset=utf-8";
             cfHeaders["Cache-Control"] = "no-cache, no-store, must-revalidate";
